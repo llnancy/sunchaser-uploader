@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import io.github.llnancy.upload4j.api.BaseUploader;
 import io.github.llnancy.upload4j.api.FileUriGenerator;
 import io.github.llnancy.upload4j.api.config.Upload4jConfig;
-import io.github.llnancy.upload4j.api.exceptions.Upload4jException;
 import io.github.nativegroup.spi.NativeServiceLoader;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +61,16 @@ public abstract class AbstractUploader implements BaseUploader {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected static String formatBasePath(String basePath) {
+        if (StringUtils.isNotEmpty(basePath) && !StringUtils.startsWith(basePath, "/")) {
+            basePath = "/" + basePath;
+        }
+        if (StringUtils.isNotEmpty(basePath) && !StringUtils.endsWith(basePath, "/")) {
+            basePath = basePath + "/";
+        }
+        return basePath;
     }
 
     public boolean supportFileType(String type) {

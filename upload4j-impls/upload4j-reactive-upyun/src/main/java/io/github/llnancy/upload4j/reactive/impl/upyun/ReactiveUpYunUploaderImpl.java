@@ -1,6 +1,5 @@
 package io.github.llnancy.upload4j.reactive.impl.upyun;
 
-import cn.hutool.core.map.MapUtil;
 import com.upyun.RestManager;
 import com.upyun.UpException;
 import com.upyun.UpYunUtils;
@@ -21,6 +20,7 @@ import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * 又拍云文件上传器
@@ -60,14 +60,15 @@ public class ReactiveUpYunUploaderImpl extends AbstractReactiveUploaderImpl {
     }
 
     @Override
-    protected Mono<Boolean> doDelete(String path) {
-        return Mono.fromCallable(() -> {
-            try (Response response = this.restManager.deleteFile(path, null)) {
-                return response.isSuccessful();
-            } catch (UpException | IOException e) {
-                throw new Upload4jException(e);
+    protected Mono<Void> doDelete(String path) {
+        try (Response response = this.restManager.deleteFile(path, null)) {
+            if (!response.isSuccessful()) {
+                throw new Upload4jException(response.message());
             }
-        });
+        } catch (UpException | IOException e) {
+            throw new Upload4jException(e);
+        }
+        return Mono.empty();
     }
 
     @Override
@@ -87,7 +88,7 @@ public class ReactiveUpYunUploaderImpl extends AbstractReactiveUploaderImpl {
                                     log.warn("[upyun] - 又拍云文件上传，文件名：{}，md5 值相同，上传文件重复", fileUri);
                                     return Mono.just(this.getProtocolHost() + fileUri);
                                 }
-                                return Mono.fromCallable(() -> this.restManager.writeFile(fileUri, bytes, MapUtil.of(RestManager.PARAMS.CONTENT_MD5.getValue(), newMd5)))
+                                return Mono.fromCallable(() -> this.restManager.writeFile(fileUri, bytes, Map.of(RestManager.PARAMS.CONTENT_MD5.getValue(), newMd5)))
                                         .flatMap(response -> {
                                             if (response.isSuccessful()) {
                                                 return Mono.just(this.getProtocolHost() + fileUri);

@@ -1,7 +1,7 @@
 package io.github.llnancy.upload4j.core.fn;
 
 import io.github.llnancy.mojian.base.util.IdUtils;
-import io.github.llnancy.upload4j.api.FileGeneratorContext;
+import io.github.llnancy.upload4j.api.FileUriGeneratorContext;
 
 /**
  * FileName: UUID.fileSuffix
@@ -12,7 +12,7 @@ import io.github.llnancy.upload4j.api.FileGeneratorContext;
 public class UUIDFilenameGenerator extends AbstractFilenameGenerator {
 
     @Override
-    protected String doGenerate(FileGeneratorContext context, String fileSuffix) {
-        return IdUtils.simpleUUIDWithSuffix(fileSuffix);
+    protected String doGenerate(FileUriGeneratorContext context) {
+        return IdUtils.simpleUUID();
     }
 }

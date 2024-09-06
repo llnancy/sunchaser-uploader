@@ -11,7 +11,7 @@ import io.github.nativegroup.spi.SPI;
 @SPI("io.github.llnancy.upload4j.core.fu.SpecifyPathFileUriGenerator")
 public interface FileUriGenerator {
 
-    String generate(FileGeneratorContext context);
+    String generate(FileUriGeneratorContext context);
 
     void setFileNameGenerator(FilenameGenerator fileNameGenerator);
 }

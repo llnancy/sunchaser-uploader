@@ -11,5 +11,5 @@ import io.github.nativegroup.spi.SPI;
 @SPI("io.github.llnancy.upload4j.core.fn.OriginalFilenameGenerator")
 public interface FilenameGenerator {
 
-    String generate(FileGeneratorContext context);
+    String generate(FileUriGeneratorContext context);
 }

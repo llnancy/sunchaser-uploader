@@ -1,14 +1,13 @@
 package io.github.llnancy.upload4j.reactive.core;
 
 import com.google.common.base.Preconditions;
-import io.github.llnancy.upload4j.api.FileGeneratorContext;
 import io.github.llnancy.upload4j.api.FileUriGenerator;
+import io.github.llnancy.upload4j.api.FileUriGeneratorContext;
 import io.github.llnancy.upload4j.api.exceptions.Upload4jException;
-import io.github.llnancy.upload4j.api.util.FileUtils;
 import io.github.llnancy.upload4j.core.AbstractUploader;
 import io.github.llnancy.upload4j.core.fu.SpecifyPathFileUriGenerator;
 import io.github.llnancy.upload4j.reactive.api.ReactiveUploader;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Mono;
@@ -43,15 +42,10 @@ public abstract class AbstractReactiveUploaderImpl extends AbstractUploader impl
     @Override
     public Mono<String> upload(FilePart fp, String basePath) throws Upload4jException {
         try {
-            String type = FileUtils.getFileExtension(Objects.requireNonNull(fp.filename()));
+            String type = FilenameUtils.getExtension(Objects.requireNonNull(fp.filename()));
             Preconditions.checkArgument(supportFileType(type), "文件格式有误");
-            String fileUri = this.fileUriGenerator.generate(new FileGeneratorContext(fp.filename(), getIs(fp)));
-            if (StringUtils.isNotEmpty(basePath) && !StringUtils.startsWith(basePath, "/")) {
-                basePath = "/" + basePath;
-            }
-            if (StringUtils.isNotEmpty(basePath) && !StringUtils.endsWith(basePath, "/")) {
-                basePath = basePath + "/";
-            }
+            String fileUri = this.fileUriGenerator.generate(FileUriGeneratorContext.create(fp.filename(), getIs(fp)));
+            basePath = formatBasePath(basePath);
             return doFilePartUpload(fp, new URL(this.getServeDomain()).getPath() + basePath + fileUri);
         } catch (Exception e) {
             throw new Upload4jException(e);
@@ -85,12 +79,12 @@ public abstract class AbstractReactiveUploaderImpl extends AbstractUploader impl
     }
 
     @Override
-    public Mono<Boolean> delete(String path) throws Upload4jException {
+    public Mono<Void> delete(String path) throws Upload4jException {
         return Mono.defer(() -> doDelete(path))
                 .onErrorMap(Exception.class, Upload4jException::new);
     }
 
-    protected abstract Mono<Boolean> doDelete(String path);
+    protected abstract Mono<Void> doDelete(String path);
 
 
     protected abstract Mono<String> doFilePartUpload(FilePart fp, String fileUri) throws Exception;

@@ -1,6 +1,6 @@
 package io.github.llnancy.upload4j.core.fu;
 
-import io.github.llnancy.upload4j.api.FileGeneratorContext;
+import io.github.llnancy.upload4j.api.FileUriGeneratorContext;
 
 import java.time.LocalDate;
 
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class LocalDateFileUriGenerator extends AbstractFileUriGenerator {
 
     @Override
-    protected String doGenerate(FileGeneratorContext context) {
+    protected String doGenerate(FileUriGeneratorContext context) {
         LocalDate now = LocalDate.now();
         String year = now.getYear() + "/";
         String month = now.getMonth().getValue() + "/";

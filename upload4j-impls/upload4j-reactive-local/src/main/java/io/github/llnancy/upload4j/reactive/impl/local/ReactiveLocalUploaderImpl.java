@@ -1,15 +1,17 @@
 package io.github.llnancy.upload4j.reactive.impl.local;
 
-import cn.hutool.core.io.FileUtil;
 import io.github.llnancy.upload4j.api.FileUriGenerator;
 import io.github.llnancy.upload4j.api.config.Upload4jConfig;
 import io.github.llnancy.upload4j.impl.local.config.LocalConfig;
 import io.github.llnancy.upload4j.reactive.core.AbstractReactiveUploaderImpl;
 import io.github.nativegroup.spi.NativeServiceLoader;
 import lombok.Getter;
+import org.apache.commons.io.FileUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 /**
@@ -42,8 +44,13 @@ public class ReactiveLocalUploaderImpl extends AbstractReactiveUploaderImpl {
     }
 
     @Override
-    protected Mono<Boolean> doDelete(String path) {
-        return Mono.just(FileUtil.del(path));
+    protected Mono<Void> doDelete(String path) {
+        try {
+            FileUtils.delete(new File(path));
+            return Mono.empty();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

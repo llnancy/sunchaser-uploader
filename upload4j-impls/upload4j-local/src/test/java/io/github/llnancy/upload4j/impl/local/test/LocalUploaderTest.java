@@ -37,7 +37,7 @@ public class LocalUploaderTest {
         LocalConfig config = new LocalConfig();
         config.setServeDomain("file://");
         config.setLocalPath("/Users/llnancy/workspace/data/test/");
-        Uploader local = NativeServiceLoader.getNativeServiceLoader(Uploader.class).getNativeService("io.github.llnancy.uploader.impl.local.LocalUploader");
+        Uploader local = NativeServiceLoader.getNativeServiceLoader(Uploader.class).getNativeService("io.github.llnancy.upload4j.impl.local.LocalUploaderImpl");
         local.setConfig(config);
         File file = new File("/Users/llnancy/workspace/money-projects/123.py");
         MockMultipartFile mmf = new MockMultipartFile(file.getAbsolutePath(), file.getName(), MediaType.APPLICATION_OCTET_STREAM_VALUE, Files.newInputStream(file.toPath()));
@@ -50,9 +50,8 @@ public class LocalUploaderTest {
         LocalConfig config = new LocalConfig();
         config.setServeDomain("file://");
         config.setLocalPath("/Users/llnancy/workspace/data/test/");
-        Uploader local = NativeServiceLoader.getNativeServiceLoader(Uploader.class).getNativeService("io.github.llnancy.uploader.impl.local.LocalUploader");
+        Uploader local = NativeServiceLoader.getNativeServiceLoader(Uploader.class).getNativeService("io.github.llnancy.upload4j.impl.local.LocalUploaderImpl");
         local.setConfig(config);
-        boolean delete = local.delete("/Users/llnancy/workspace/data/test/123.py");
-        Assertions.assertTrue(delete);
+        local.delete("/Users/llnancy/workspace/data/test/123.py");
     }
 }

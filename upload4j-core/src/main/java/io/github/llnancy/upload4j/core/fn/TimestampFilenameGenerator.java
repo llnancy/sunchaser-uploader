@@ -1,6 +1,6 @@
 package io.github.llnancy.upload4j.core.fn;
 
-import io.github.llnancy.upload4j.api.FileGeneratorContext;
+import io.github.llnancy.upload4j.api.FileUriGeneratorContext;
 
 import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class TimestampFilenameGenerator extends AbstractFilenameGenerator {
 
     @Override
-    protected String doGenerate(FileGeneratorContext context, String fileSuffix) {
-        return Instant.now().toEpochMilli() + String.format("%04d", ThreadLocalRandom.current().nextInt(10000)) + fileSuffix;
+    protected String doGenerate(FileUriGeneratorContext context) {
+        return Instant.now().toEpochMilli() + String.format("%04d", ThreadLocalRandom.current().nextInt(10000));
     }
 }

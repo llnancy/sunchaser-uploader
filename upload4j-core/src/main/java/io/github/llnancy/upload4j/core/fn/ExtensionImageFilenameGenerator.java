@@ -1,12 +1,12 @@
 package io.github.llnancy.upload4j.core.fn;
 
-import cn.hutool.core.text.StrPool;
 import io.github.llnancy.mojian.base.util.IdUtils;
-import io.github.llnancy.upload4j.api.FileGeneratorContext;
+import io.github.llnancy.upload4j.api.FileUriGeneratorContext;
 import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 /**
  * FileName: height_width-UUID.fileSuffix
@@ -18,10 +18,14 @@ public class ExtensionImageFilenameGenerator extends AbstractFilenameGenerator {
 
     @SneakyThrows
     @Override
-    protected String doGenerate(FileGeneratorContext context, String fileSuffix) {
-        BufferedImage bi = ImageIO.read(context.is());
-        int width = bi.getWidth();
-        int height = bi.getHeight();
-        return height + StrPool.UNDERLINE + width + StrPool.DASHED + IdUtils.simpleUUIDWithSuffix(fileSuffix);
+    protected String doGenerate(FileUriGeneratorContext context) {
+        int width = 0;
+        int height = 0;
+        if (Objects.nonNull(context.is())) {
+            BufferedImage bi = ImageIO.read(context.is());
+            width = bi.getWidth();
+            height = bi.getHeight();
+        }
+        return height + "_" + width + "-" + IdUtils.simpleUUID();
     }
 }

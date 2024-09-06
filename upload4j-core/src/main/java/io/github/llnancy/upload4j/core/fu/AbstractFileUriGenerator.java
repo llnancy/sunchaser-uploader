@@ -1,6 +1,6 @@
 package io.github.llnancy.upload4j.core.fu;
 
-import io.github.llnancy.upload4j.api.FileGeneratorContext;
+import io.github.llnancy.upload4j.api.FileUriGeneratorContext;
 import io.github.llnancy.upload4j.api.FilenameGenerator;
 import io.github.llnancy.upload4j.api.FileUriGenerator;
 import io.github.nativegroup.spi.NativeServiceLoader;
@@ -27,7 +27,7 @@ public abstract class AbstractFileUriGenerator implements FileUriGenerator {
     }
 
     @Override
-    public String generate(FileGeneratorContext context) {
+    public String generate(FileUriGeneratorContext context) {
         String fileUri = doGenerate(context);
         if (StringUtils.isNotBlank(fileUri)) {
             return fileUri + "/" + fileNameGenerator.generate(context);
@@ -36,5 +36,5 @@ public abstract class AbstractFileUriGenerator implements FileUriGenerator {
         }
     }
 
-    protected abstract String doGenerate(FileGeneratorContext context);
+    protected abstract String doGenerate(FileUriGeneratorContext context);
 }

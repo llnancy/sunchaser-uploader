@@ -42,5 +42,5 @@ public interface ReactiveUploader extends BaseUploader {
      * @return success or fail
      * @throws Upload4jException ex
      */
-    Mono<Boolean> delete(String path) throws Upload4jException;
+    Mono<Void> delete(String path) throws Upload4jException;
 }

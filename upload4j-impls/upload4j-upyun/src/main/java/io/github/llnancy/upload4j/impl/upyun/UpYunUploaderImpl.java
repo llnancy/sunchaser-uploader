@@ -1,6 +1,5 @@
 package io.github.llnancy.upload4j.impl.upyun;
 
-import cn.hutool.core.map.MapUtil;
 import com.upyun.RestManager;
 import com.upyun.UpYunUtils;
 import io.github.llnancy.upload4j.api.FileUriGenerator;
@@ -16,6 +15,7 @@ import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -57,19 +57,23 @@ public class UpYunUploaderImpl extends AbstractUploaderImpl {
 
     @Override
     protected String doMultipartFileUpload(MultipartFile mf, String fileUri) throws Exception {
+        return doUpload(mf.getBytes(), fileUri);
+    }
+
+    @Override
+    protected String doUpload(byte[] bytes, String fileUri) throws Exception {
         Response fileInfo = null;
         Response response = null;
         try {
             fileInfo = this.restManager.getFileInfo(fileUri);
             Headers headers = fileInfo.headers();
             String fileSize = headers.get(RestManager.PARAMS.X_UPYUN_FILE_SIZE.getValue());
-            byte[] bytes = mf.getBytes();
             String newMd5 = UpYunUtils.md5(bytes);
             if (StringUtils.isNotBlank(fileSize) && newMd5.equals(headers.get(RestManager.PARAMS.CONTENT_MD5.getValue()))) {
                 log.warn("[upyun] - 又拍云文件上传，文件名：{}，md5 值相同，上传文件重复", fileUri);
                 return this.getProtocolHost() + fileUri;
             }
-            response = this.restManager.writeFile(fileUri, bytes, MapUtil.of(RestManager.PARAMS.CONTENT_MD5.getValue(), newMd5));
+            response = this.restManager.writeFile(fileUri, bytes, Map.of(RestManager.PARAMS.CONTENT_MD5.getValue(), newMd5));
             if (response.isSuccessful()) {
                 return this.getProtocolHost() + fileUri;
             }
@@ -86,9 +90,11 @@ public class UpYunUploaderImpl extends AbstractUploaderImpl {
     }
 
     @Override
-    protected boolean doDelete(String path) throws Exception {
+    protected void doDelete(String path) throws Exception {
         try (Response response = this.restManager.deleteFile(path, null)) {
-            return response.isSuccessful();
+            if (!response.isSuccessful()) {
+                throw new Upload4jException(response.message());
+            }
         }
     }
 }
